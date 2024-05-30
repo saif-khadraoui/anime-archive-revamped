@@ -6,6 +6,8 @@ const ListModel = require("./utils/models/List")
 const OpenAi = require("openai")
 const ReviewsModel = require("./utils/models/Reviews")
 const UserListModel = require("./utils/models/UserList")
+const ReviewVoteModel = require("./utils/models/ReviewVote")
+const SongVoteModel = require("./utils/models/SongVote")
 
 const openai = new OpenAi({
     apiKey: "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"
@@ -239,6 +241,137 @@ app.delete("/api/deleteList", async(req, res) => {
     }
 })
 
+app.post("/api/vote", async(req, res) => {
+    const { reviewId, userId, vote } = req.body;
+
+    const data = new ReviewVoteModel({
+        ReviewId: reviewId,
+        UserId: userId,
+        Vote: vote
+    })
+
+    try{
+        const response = await data.save()
+        res.send(response)
+    } catch(err){
+        console.log(err)
+        res.send(err)
+    }
+})
+
+app.get("/api/getVotes", async(req,res) => {
+    const { reviewId } = req.query;
+
+    try{
+        const upVotes = await ReviewVoteModel.find({ ReviewId: reviewId, Vote: true }).countDocuments()
+        const downVotes = await ReviewVoteModel.find({ ReviewId: reviewId, Vote: false }).countDocuments()
+        res.send({
+            upVotes: upVotes,
+            downVotes: downVotes
+        })
+    } catch(err){
+        console.log(err)
+        res.send(err)
+    }
+})
+
+app.get("/api/checkIfVoted", async(req,res) => {
+    const { userId, reviewId } = req.query;
+
+    try{
+        const voteOutcome = await ReviewVoteModel.find({ ReviewId: reviewId, UserId: userId })
+        res.send(voteOutcome)
+    } catch(err){
+        console.log(err)
+        res.send(err)
+    }
+})
+
+app.delete("/api/deleteVote", async(req,res) => {
+    const { userId, reviewId } = req.query;
+
+    try{
+        await ReviewVoteModel.findOneAndDelete({ ReviewId: reviewId, UserId: userId })
+        res.send("vote on review deleted")
+    } catch(err){
+        res.send(err)
+        console.log(err)
+    }
+})
+
+app.post("/api/addSongVote", async(req, res) => {
+    const { animeId, userId, basename, vote } = req.body;
+    console.log(req.body)
+
+    const data = new SongVoteModel({
+        AnimeId: animeId,
+        UserId: userId,
+        Basename: basename,
+        Vote: vote
+    })
+
+    try{
+        const response = await data.save()
+        res.send(response)
+    } catch(err){
+        console.log(err)
+        res.send(err)
+    }
+})
+
+app.delete("/api/deleteSongVote", async(req,res) => {
+    const { userId, basename } = req.query;
+
+    try{
+        await SongVoteModel.findOneAndDelete({ Basename: basename, UserId: userId })
+        res.send("vote on song deleted")
+    } catch(err){
+        res.send(err)
+        console.log(err)
+    }
+})
+
+app.get("/api/checkIfSongVoted", async(req,res) => {
+    const { userId, basename } = req.query;
+
+    try{
+        const voteOutcome = await SongVoteModel.find({ Basename: basename, UserId: userId })
+        res.send(voteOutcome)
+    } catch(err){
+        console.log(err)
+        res.send(err)
+    }
+})
+
+app.get("/api/getSongVotes", async(req,res) => {
+    const { basename } = req.query;
+
+    try{
+        const upVotes = await SongVoteModel.find({ Basename: basename, Vote: true }).countDocuments()
+        const downVotes = await SongVoteModel.find({ Basename: basename, Vote: false }).countDocuments()
+        res.send({
+            upVotes: upVotes,
+            downVotes: downVotes
+        })
+    } catch(err){
+        console.log(err)
+        res.send(err)
+    }
+})
+
+app.get("/api/getTopSongs", async(req, res) => {
+
+    try{
+        const response = await SongVoteModel.aggregate(
+            {$group : { _id : '$AnimeId', count : {$sum : 1}}}
+         ).result
+         console.log(response)  
+         res.send(response)
+    } catch(err){
+        console.log(err)
+        res.send(err)
+    }
+})
 
 app.listen(1337, () => {
     console.log("server connected")

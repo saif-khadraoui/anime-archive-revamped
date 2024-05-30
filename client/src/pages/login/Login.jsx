@@ -29,7 +29,7 @@ function Login() {
         setEmail(response.data[0].email)
         setProfilePic(response.data[0].profilePic)
         toast("Successfully logged in")
-        navigate("/dashboard")
+        navigate("/")
       }
     })
   }

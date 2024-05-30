@@ -14,9 +14,11 @@ function Search() {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const pathname = useLocation().pathname
+  console.log(pathname)
   const animePath = "/dashboard/searchAnime"
   const mangaPath = "/dashboard/searchManga"
-  const type = pathname == mangaPath ? "manga" : "anime" 
+  const webtoonPath = "/dashboard/searchWebtoon"
+  const type = (pathname == animePath) ? "anime" : "manga" 
 
   // useEffect(() => {
   //   setAnimes([])
@@ -34,14 +36,44 @@ function Search() {
     console.log(query)
 
     const fetchAnimes = async () => {
-      await Axios.get(`https://api.jikan.moe/v4/${type}?q=${query}&limit=10`).then((response) => {
-        console.log(response)
-        if(response.data.data.length > 0){
-          setAnimes(response.data.data)
+      await Axios.get(`https://api.jikan.moe/v4/${type}?q=${query}&limit=${pathname == webtoonPath ? 20 : 10}`).then((response) => {
+        console.log(response.data.data)
+        // let arr = response.data.data.map(item => item.filter(e => e.type !== "Manhwa"))
+        // let arr = response.data.data.filter(function(value){
+        //   return value.type == "Manhwa"
+        // })
+        // console.log(arr)
+        if(pathname == webtoonPath){
+          let data = response.data.data.filter(function(value){return value.type == "Manhwa"})
+
+          if(data.length > 0){
+            setAnimes(data)
+          } else{
+            alert("no data found")
+            setLoading(false)
+          }
         } else{
-          alert("no animes were found")
-          setLoading(false)
+          if(response.data.data.length > 0){
+            setAnimes(response.data.data)
+          } else{
+            alert("no data found")
+            setLoading(false)
+          }
         }
+        // if(response.data.data.length > 0){
+        //   if(pathname == webtoonPath){
+        //     setAnimes(response.data.data.filter(function(value){
+        //       return value.type == "Manhwa"
+        //     }))
+        //   } else{
+        //     setAnimes(response.data.data)
+        //   }
+        // } else{
+        //   console.log("nothing found")
+        //   setAnimes([])
+        //   alert("no animes were found")
+        //   setLoading(false)
+        // }
         
         // setLoading(false)
       })
@@ -97,11 +129,14 @@ function Search() {
             </>
           ) : (
             <>
-            {pathname == mangaPath ? (
-              <p style={{ color: "white" }}>Search a manga up</p>
-            ) : (
+            {/* {pathname == animePath ? (
               <p style={{ color: "white" }}>Search an anime up</p>
-            )}
+            ) : (
+              <p style={{ color: "white" }}>Search a manga up</p>
+            )} */}
+            {pathname == animePath && <p style={{ color: "white" }}>Search an anime up</p>}
+            {pathname == mangaPath && <p style={{ color: "white" }}>Search a manga up</p>}
+            {pathname == webtoonPath && <p style={{ color: "white" }}>Search a webtoon up</p>}
             </>
           )}
 

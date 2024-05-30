@@ -6,8 +6,11 @@ import { BiSolidSlideshow } from "react-icons/bi";
 import MenuLink from './menuLink/MenuLink';
 import { IoLogOutOutline } from "react-icons/io5";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { MdMenuBook } from "react-icons/md";
 import UserContext from "../../../contexts/User"
 import { useNavigate } from 'react-router-dom';
+import { IoMusicalNotesOutline } from "react-icons/io5";
+import { MdQueueMusic } from "react-icons/md";
 
 function Sidebar() {
     const menuItems = [
@@ -16,7 +19,7 @@ function Sidebar() {
         list: [
           {
             title: "Home",
-            path: "/dashboard",
+            path: "/",
             icon: <MdHome />,
           },
           {
@@ -29,11 +32,31 @@ function Sidebar() {
             path: `/dashboard/searchManga`,
             icon: <ImBooks />
           },
+          {
+            title: "Search webtoon",
+            path: `/dashboard/searchWebtoon`,
+            icon: <MdMenuBook />
+          },
             // {
             //   title: "Assets",
             //   path: `/dashboard/assets`,
             //   icon: <MdSupervisedUserCircle />,
             // }
+          ],
+        },
+        {
+          title: "MUSIC",
+          list: [
+            {
+              title: "Search songs",
+              path: "/dashboard/searchSongs",
+              icon: <IoMusicalNotesOutline />,
+            },
+            {
+              title: "Top songs ",
+              path: `/dashboard/topSongs`,
+              icon: <MdQueueMusic />
+            }
           ],
         },
         {
@@ -59,7 +82,7 @@ function Sidebar() {
           list: [
             {
               title: "Home",
-              path: "/dashboard",
+              path: "/",
               icon: <MdHome />,
             },
             {
@@ -72,11 +95,31 @@ function Sidebar() {
               path: `/dashboard/searchManga`,
               icon: <ImBooks />
             },
+            {
+              title: "Search webtoon",
+              path: `/dashboard/searchWebtoon`,
+              icon: <MdMenuBook />
+            },
             // {
             //   title: "Assets",
             //   path: `/dashboard/assets`,
             //   icon: <MdSupervisedUserCircle />,
             // }
+          ],
+        },
+        {
+          title: "MUSIC",
+          list: [
+            {
+              title: "Search songs",
+              path: "/dashboard/searchSongs",
+              icon: <IoMusicalNotesOutline />,
+            },
+            {
+              title: "Top songs ",
+              path: `/dashboard/topSongs`,
+              icon: <MdQueueMusic />
+            }
           ],
         },
         {

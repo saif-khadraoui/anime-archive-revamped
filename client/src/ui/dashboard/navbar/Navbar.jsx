@@ -24,6 +24,10 @@ function Navbar() {
     document.getElementById("mobileContainer").style.display = "block"
   }
 
+  const routeProfile = () => {
+    navigate(`/dashboard/profile/${userId}`)
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.left}>
@@ -31,7 +35,7 @@ function Navbar() {
       </div>
       <div className={styles.right}>
         {userId.length > 0 ? (
-          <CgProfile style={{ color: "white", height: "26px", width: "26px" }}/>
+          <CgProfile style={{ color: "white", height: "26px", width: "26px", cursor: "pointer" }} onClick={routeProfile}/>
           // <p>logged in</p>
         ) : (
           <button onClick={routeLogin}>Login</button>

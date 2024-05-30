@@ -10,6 +10,7 @@ import { FaStar } from "react-icons/fa6";
 import { CgProfile } from "react-icons/cg";
 import { FaArrowAltCircleDown, FaArrowAltCircleUp } from "react-icons/fa";
 import AddReviewModal from '../../../ui/dashboard/anime/addReviewModal/AddReviewModal'
+import Review from '../../../ui/dashboard/anime/review/Review'
 
 function Anime() {
     const opts = {
@@ -73,7 +74,7 @@ function Anime() {
         
         const fetchAnime = async () => {
             await Axios.get(`https://api.jikan.moe/v4/${type}/${id}/full`).then((response) => {
-                // console.log(response)
+                console.log(response)
                 setAnimeData(response.data.data)
                 // fetchAnimeRecommendation(response.data.data.title, response.data.data.genres)
             })
@@ -164,6 +165,7 @@ function Anime() {
             setAverageStars(totalStars / reviews.length)
         }
 
+
         calculateAverageStars()
     }, [reviews])
 
@@ -178,6 +180,7 @@ function Anime() {
         // console.log(selectedList)
     }
 
+    
 
   return (
     <div className={styles.container}>
@@ -282,38 +285,39 @@ function Anime() {
                         <>
                         {reviews.map((review, idx) => {
                             return (
-                            <div className={styles.reviewItem}>
-                                <div className={styles.reviewItemTop}>
-                                    <div className={styles.reviewItemLeft}>
-                                        <CgProfile style={{ width: "30px", height: "30px" }}/>
-                                        <div className={styles.userDetails}>
-                                            <p className={styles.username}>{review.Guest == true ? "Anonymous" : review.Username}</p>
-                                            <p className={styles.date}>{review.createdAt?.slice(0,10)}</p>
-                                        </div>
-                                    </div>
-                                    <div className={styles.reviewItemRight}>
-                                        <div className={styles.reviewRating}>
-                                            <p>{review.Rating}</p>
-                                            <FaStar style={{ color: "gold" }}/>
-                                        </div>
-                                    </div>
-                                </div>
+                            // <div className={styles.reviewItem}>
+                            //     <div className={styles.reviewItemTop}>
+                            //         <div className={styles.reviewItemLeft}>
+                            //             <CgProfile style={{ width: "30px", height: "30px" }}/>
+                            //             <div className={styles.userDetails}>
+                            //                 <p className={styles.username}>{review.Guest == true ? "Anonymous" : review.Username}</p>
+                            //                 <p className={styles.date}>{review.createdAt?.slice(0,10)}</p>
+                            //             </div>
+                            //         </div>
+                            //         <div className={styles.reviewItemRight}>
+                            //             <div className={styles.reviewRating}>
+                            //                 <p>{review.Rating}</p>
+                            //                 <FaStar style={{ color: "gold" }}/>
+                            //             </div>
+                            //         </div>
+                            //     </div>
                                     
-                                    <div className={styles.reviewContent}>
-                                        <p>{review.Content}</p>
-                                    </div>
-                                    {/* <div className={styles.reviewVote}>
-                                        <div className={styles.vote}>
-                                            <p>5</p>
-                                            <FaArrowAltCircleUp />
-                                        </div>
-                                        <div className={styles.vote}>
-                                            <p>5</p>
-                                            <FaArrowAltCircleDown />
-                                        </div>
-                                    </div> */}
+                            //         <div className={styles.reviewContent}>
+                            //             <p>{review.Content}</p>
+                            //         </div>
+                            //         <div className={styles.reviewVote}>
+                            //             <div className={styles.vote}>
+                            //                 <p>5</p>
+                            //                 <FaArrowAltCircleUp style={{ cursor: "pointer" }} onClick={(() => attemptVote("up", review._id))}/>
+                            //             </div>
+                            //             <div className={styles.vote}>
+                            //                 <p>5</p>
+                            //                 <FaArrowAltCircleDown style={{ cursor: "pointer" }} onClick={(() => attemptVote("down", review._id))}/>
+                            //             </div>
+                            //         </div>
 
-                            </div>
+                            // </div>
+                            <Review review={review}/>
                             )
                             })}
                         </>
