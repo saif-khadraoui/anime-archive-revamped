@@ -46,7 +46,7 @@ function Anime() {
     const addToList = async() => {
         setAnimeAdded(true)
         // console.log(selectedList)
-        await Axios.post("http://localhost:1337/api/addToList", {
+        await Axios.post("https://anime-archive-revamped.onrender.com/api/addToList", {
             selectedList: selectedList,
             userId: userId,
             type: animeData?.type == "Manga" ? "Manga" : "Anime",
@@ -61,7 +61,7 @@ function Anime() {
     useEffect(() => {
         // setAnimeAdded(false)
         const fetchLists = async () => {
-            await Axios.get("http://localhost:1337/api/getLists", {
+            await Axios.get("https://anime-archive-revamped.onrender.com/api/getLists", {
                 params: { userId }
               }).then((response) => {
                 console.log(response)
@@ -83,7 +83,7 @@ function Anime() {
         fetchAnime()
 
         const fetchListAmount = async () => {
-            await Axios.get("http://localhost:1337/api/getAmountAdded", {
+            await Axios.get("https://anime-archive-revamped.onrender.com/api/getAmountAdded", {
                 params: { id }
             }).then((response) => {
                 // console.log(response)
@@ -103,7 +103,7 @@ function Anime() {
         fetchRecommendations()
 
         // const fetchAnimeRecommendation = async (anime, genres) => {
-        //     await Axios.post("http://localhost:1337/chat", {
+        //     await Axios.post("https://anime-archive-revamped.onrender.com/chat", {
         //         anime: anime,
         //         genres: genres[0].name
         //     }).then((response) => {
@@ -114,7 +114,7 @@ function Anime() {
 
 
         const fetchReviews = async () => {
-            await Axios.get("http://localhost:1337/api/getReviews", {
+            await Axios.get("https://anime-archive-revamped.onrender.com/api/getReviews", {
                 params: { id }
             }).then((response) => {
                 // console.log(response)
@@ -131,7 +131,7 @@ function Anime() {
 
     useEffect(() => {
         const checkAdded = async () => {
-            await Axios.get("http://localhost:1337/api/checkAdded", {
+            await Axios.get("https://anime-archive-revamped.onrender.com/api/checkAdded", {
                 params: { userId, id, selectedList }
             }).then((response) => {
                 console.log(response)

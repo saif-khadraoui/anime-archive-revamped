@@ -22,7 +22,7 @@ function Review({review}) {
 
         if(type == "up" && upVoteIsTrue == true || type == "down" && downVoteIsTrue == true){
             console.log("here")
-            await Axios.delete("http://localhost:1337/api/deleteVote", {
+            await Axios.delete("https://anime-archive-revamped.onrender.com/api/deleteVote", {
                 params: { reviewId, userId }
             }).then((response) => {
                 console.log(response)
@@ -31,12 +31,12 @@ function Review({review}) {
         }
 
         else if (type == "up" && downVoteIsTrue == true || type == "down" && upVoteIsTrue == true){
-            await Axios.delete("http://localhost:1337/api/deleteVote", {
+            await Axios.delete("https://anime-archive-revamped.onrender.com/api/deleteVote", {
                 params: { reviewId, userId }
             }).then((response) => {
                 console.log(response)
             })
-            await Axios.post("http://localhost:1337/api/vote", {
+            await Axios.post("https://anime-archive-revamped.onrender.com/api/vote", {
             reviewId: reviewId,
             userId: userId,
             vote: type == "up" ? true : false
@@ -45,7 +45,7 @@ function Review({review}) {
             setUpdate(!update)
         })
         } else{
-            await Axios.post("http://localhost:1337/api/vote", {
+            await Axios.post("https://anime-archive-revamped.onrender.com/api/vote", {
                 reviewId: reviewId,
                 userId: userId,
                 vote: type == "up" ? true : false
@@ -62,7 +62,7 @@ function Review({review}) {
 
     useEffect(() => {
         const getVotes = async () => {
-            await Axios.get("http://localhost:1337/api/getVotes" , {
+            await Axios.get("https://anime-archive-revamped.onrender.com/api/getVotes" , {
                 params: { reviewId }
             }).then((response) => {
                 // console.log(response)
@@ -74,7 +74,7 @@ function Review({review}) {
         getVotes()
 
         const checkIfVoted = async () => {
-            await Axios.get("http://localhost:1337/api/checkIfVoted", {
+            await Axios.get("https://anime-archive-revamped.onrender.com/api/checkIfVoted", {
                 params: { reviewId, userId }
             }).then((response) => {
                 // console.log(response)

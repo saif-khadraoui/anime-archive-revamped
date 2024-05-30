@@ -15,7 +15,7 @@ function List() {
 
   useEffect(() => {
     // const fetchList = async () => {
-      // await Axios.get("http://localhost:1337/api/getList", {
+      // await Axios.get("https://anime-archive-revamped.onrender.com/api/getList", {
       //   params: { userId }
       // }).then((response) => {
       //   // console.log(response)
@@ -26,7 +26,7 @@ function List() {
     // fetchList()
 
     const fetchLists = async () => {
-      await Axios.get("http://localhost:1337/api/getLists", {
+      await Axios.get("https://anime-archive-revamped.onrender.com/api/getLists", {
         params: { userId }
       }).then((response) => {
         // console.log(response)
@@ -38,7 +38,7 @@ function List() {
   }, [lists, modal])
 
   const deleteList = async (listId) => {
-    await Axios.delete("http://localhost:1337/api/deleteList", {
+    await Axios.delete("https://anime-archive-revamped.onrender.com/api/deleteList", {
       params: { listId }
     }).then((response) => {
       console.log(response)

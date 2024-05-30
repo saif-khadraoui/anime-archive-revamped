@@ -23,7 +23,7 @@ function AnimeCard({ anime, number }) {
     // }, [])
 
     const deleteFromList = async () => {
-        await Axios.delete("http://localhost:1337/api/deleteFromList", {
+        await Axios.delete("https://anime-archive-revamped.onrender.com/api/deleteFromList", {
             params: { id }
         }).then((response) => {
             // console.log(response)

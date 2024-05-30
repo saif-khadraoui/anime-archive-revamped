@@ -13,7 +13,7 @@ function ListItem() {
 
     useEffect(() => {
         const fetchListItem = async () => {
-            await Axios.get("http://localhost:1337/api/getListItem", {
+            await Axios.get("https://anime-archive-revamped.onrender.com/api/getListItem", {
                 params: { id }
             }).then((response) => {
                 // console.log(response)
@@ -25,7 +25,7 @@ function ListItem() {
 
 
         const fetchAnimes = async () => {
-            await Axios.get("http://localhost:1337/api/getList", {
+            await Axios.get("https://anime-archive-revamped.onrender.com/api/getList", {
                 params: { id }
               }).then((response) => {
                 // console.log(response)

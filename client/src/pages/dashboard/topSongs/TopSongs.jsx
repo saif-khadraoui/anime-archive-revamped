@@ -7,7 +7,7 @@ function TopSongs() {
 
   useEffect(() => {
     const fetchTopSongs = async () => {
-      await Axios.get("http://localhost:1337/api/getTopSongs").then((response) => {
+      await Axios.get("https://anime-archive-revamped.onrender.com/api/getTopSongs").then((response) => {
         console.log(response)
       })
     }

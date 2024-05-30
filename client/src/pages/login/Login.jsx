@@ -18,7 +18,7 @@ function Login() {
 
   const attemptLogin = async (e) => {
     e.preventDefault()
-    await Axios.get("http://localhost:1337/api/login", {
+    await Axios.get("https://anime-archive-revamped.onrender.com/api/login", {
       params: { username, password }
     }).then((response) => {
       console.log(response)

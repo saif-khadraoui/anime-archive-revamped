@@ -26,7 +26,7 @@ function Song() {
 
         if(type == "up" && upVoteIsTrue == true || type == "down" && downVoteIsTrue == true){
             console.log("here")
-            await Axios.delete("http://localhost:1337/api/deleteSongVote", {
+            await Axios.delete("https://anime-archive-revamped.onrender.com/api/deleteSongVote", {
                 params: { basename, userId }
             }).then((response) => {
                 console.log(response)
@@ -35,12 +35,12 @@ function Song() {
         }
 
         else if (type == "up" && downVoteIsTrue == true || type == "down" && upVoteIsTrue == true){
-            await Axios.delete("http://localhost:1337/api/deleteSongVote", {
+            await Axios.delete("https://anime-archive-revamped.onrender.com/api/deleteSongVote", {
                 params: { basename, userId }
             }).then((response) => {
                 console.log(response)
             })
-            await Axios.post("http://localhost:1337/api/addSongVote", {
+            await Axios.post("https://anime-archive-revamped.onrender.com/api/addSongVote", {
                 animeId: id,
                 basename: basename,
                 userId: userId,
@@ -50,7 +50,7 @@ function Song() {
             setUpdate(!update)
         })
         } else{
-            await Axios.post("http://localhost:1337/api/addSongVote", {
+            await Axios.post("https://anime-archive-revamped.onrender.com/api/addSongVote", {
                 animeId: id,
                 basename: basename,
                 userId: userId,
@@ -68,7 +68,7 @@ function Song() {
 
     useEffect(() => {
         const getVotes = async () => {
-            await Axios.get("http://localhost:1337/api/getSongVotes" , {
+            await Axios.get("https://anime-archive-revamped.onrender.com/api/getSongVotes" , {
                 params: { basename }
             }).then((response) => {
                 // console.log(response)
@@ -80,7 +80,7 @@ function Song() {
         getVotes()
 
         const checkIfVoted = async () => {
-            await Axios.get("http://localhost:1337/api/checkIfSongVoted", {
+            await Axios.get("https://anime-archive-revamped.onrender.com/api/checkIfSongVoted", {
                 params: { basename, userId }
             }).then((response) => {
                 // console.log(response)
@@ -112,7 +112,7 @@ function Song() {
     }, [])
 
     // const addVote = async (type) => {
-    //     await Axios.post("http://localhost:1337/api/addSongVote", {
+    //     await Axios.post("https://anime-archive-revamped.onrender.com/api/addSongVote", {
     //         userId: userId,
     //         basename: basename,
     //         vote: type == "up" ? true : false

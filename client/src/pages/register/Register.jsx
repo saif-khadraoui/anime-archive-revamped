@@ -10,7 +10,7 @@ function Register() {
 
   const attemptRegister = async (e) => {
     e.preventDefault()
-    await Axios.post("http://localhost:1337/api/register", {
+    await Axios.post("https://anime-archive-revamped.onrender.com/api/register", {
       email: email,
       username: username,
       password: password

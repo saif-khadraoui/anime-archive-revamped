@@ -3,7 +3,6 @@ import styles from "./addReviewModal.module.css";
 import { MdClose } from "react-icons/md";
 import { FaStar } from "react-icons/fa6";
 import Axios from "axios"
-import toast, { Toaster } from 'react-hot-toast';
 
 function AddReviewModal({ setModal, animeId }) {
     const userId = localStorage.getItem("userId")
@@ -14,7 +13,7 @@ function AddReviewModal({ setModal, animeId }) {
     const [content, setContent] = useState("")
 
     const addReview = async () => {
-        await Axios.post("http://localhost:1337/api/addReview", {
+        await Axios.post("https://anime-archive-revamped.onrender.com/api/addReview", {
             guest: guest,
             animeId: animeId,
             userId: userId,
@@ -59,7 +58,6 @@ function AddReviewModal({ setModal, animeId }) {
         <div className={styles.button}>
             <button onClick={addReview}>Add review</button>
         </div>
-        {/* <Toaster /> */}
     </div>
   )
 }

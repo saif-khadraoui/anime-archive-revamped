@@ -8,7 +8,7 @@ function CreateListModal({ setModal }) {
     const [listName, setListName] = useState("")
 
     const createList = async () => {
-        await Axios.post("http://localhost:1337/api/createList", {
+        await Axios.post("https://anime-archive-revamped.onrender.com/api/createList", {
             userId: userId,
             listName: listName
         }).then((response) => {
