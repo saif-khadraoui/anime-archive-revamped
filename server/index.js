@@ -3,15 +3,11 @@ const cors = require("cors")
 const mongoose = require("mongoose")
 const UsersModel = require("./utils/models/User")
 const ListModel = require("./utils/models/List")
-const OpenAi = require("openai")
 const ReviewsModel = require("./utils/models/Reviews")
 const UserListModel = require("./utils/models/UserList")
 const ReviewVoteModel = require("./utils/models/ReviewVote")
 const SongVoteModel = require("./utils/models/SongVote")
 
-const openai = new OpenAi({
-    apiKey: "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"
-})
 
 
 const app = express()
