@@ -157,7 +157,7 @@ function Sidebar() {
         setUsername("")
         setEmail("")
         setProfilePic("")
-        navigate("/dashboard")
+        navigate("/")
 
       }
 

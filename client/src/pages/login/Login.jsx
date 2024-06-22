@@ -3,8 +3,6 @@ import styles from "../../ui/login/login.module.css"
 import { Link } from 'react-router-dom'
 import Axios from "axios"
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import UserContext from '../../contexts/User';
 
 function Login() {
@@ -28,7 +26,6 @@ function Login() {
         setUsername(response.data[0].username)
         setEmail(response.data[0].email)
         setProfilePic(response.data[0].profilePic)
-        toast("Successfully logged in")
         navigate("/")
       }
     })
@@ -51,18 +48,7 @@ function Login() {
         <p>Not a user?<Link to="/register"> Register here</Link></p>
       </form>
 
-      <ToastContainer
-        position="top-center"
-        autoClose={1000}
-        hideProgressBar
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover={false}
-        theme="light"
-        />
+
     </div>
   )
 }
