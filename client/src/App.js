@@ -44,7 +44,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Dashboard />}>
-            <Route path="/" index element={<Home />} />
+            <Route index element={<Home />} />
             <Route path="/dashboard/searchAnime" element={<Search />} />
             <Route path="/dashboard/searchManga" element={<Search />} />
             <Route path="/dashboard/searchWebtoon" element={<Search />} />
