@@ -16,6 +16,18 @@ const UserSchema = new mongoose.Schema({
     profilePic: {
         type: String,
         required: false
+    },
+    bio: {
+        type: String,
+        required: false
+    },
+    location: {
+        type: String,
+        required: false
+    },
+    joinDate: {
+        type: Date,
+        required: false
     }
 
 })

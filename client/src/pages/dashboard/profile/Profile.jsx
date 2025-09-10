@@ -29,11 +29,11 @@ function Profile() {
   const [userDetails, setUserDetails] = useState(null)
   const [userStats, setUserStats] = useState(null)
   
-  // Mock data for demonstration - in real app, this would come from API
+  // User profile data - will be populated from API
   const [userProfile, setUserProfile] = useState({
-    bio: "Anime enthusiast and manga collector. Love exploring new worlds through animation!",
-    joinDate: "January 2024",
-    location: "Tokyo, Japan",
+    bio: "",
+    joinDate: "",
+    location: "",
     favoriteGenres: ["Action", "Romance", "Fantasy"],
     stats: {
       animeWatched: 156,
@@ -91,9 +91,36 @@ function Profile() {
     setIsEditing(!isEditing)
   }
 
-  const handleSaveProfile = () => {
-    setIsEditing(false)
-    // In real app, save to backend
+  const handleSaveProfile = async () => {
+    try {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        console.error("No user ID found");
+        return;
+      }
+
+      const response = await Axios.put("https://anime-archive-revamped.onrender.com/api/editProfile", {
+        userId: userId,
+        bio: userProfile.bio,
+        location: userProfile.location
+      });
+
+      if (response.data.success) {
+        // Update userDetails with the new data
+        setUserDetails(prev => ({
+          ...prev,
+          bio: response.data.user.bio,
+          location: response.data.user.location
+        }));
+        
+        setIsEditing(false);
+        console.log("Profile updated successfully");
+      } else {
+        console.error("Failed to update profile:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
   }
 
   const handleCustomization = () => {
@@ -110,17 +137,29 @@ function Profile() {
           
           // Fetch user details and statistics in parallel
           const [userDetailsResponse, userStatsResponse] = await Promise.all([
-            Axios.get("http://localhost:1337/api/getUserDetails", {
+            Axios.get("https://anime-archive-revamped.onrender.com/api/getUserDetails", {
               params: { userId }
             }),
-            Axios.get("http://localhost:1337/api/getUserStats", {
+            Axios.get("https://anime-archive-revamped.onrender.com/api/getUserStats", {
               params: { userId }
             })
           ])
           
-          setUserDetails(userDetailsResponse.data)
-          setUserStats(userStatsResponse.data)
-          console.log(userStatsResponse.data)
+        setUserDetails(userDetailsResponse.data)
+        setUserStats(userStatsResponse.data)
+        console.log("user profile fetched:", userDetailsResponse.data)
+        
+        // Update userProfile with real data from API
+        setUserProfile(prev => ({
+          ...prev,
+          bio: userDetailsResponse.data.bio || "",
+          location: userDetailsResponse.data.location || "",
+          joinDate: userDetailsResponse.data.joinDate ? 
+            new Date(userDetailsResponse.data.joinDate).toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long' 
+            }) : "Recently"
+        }))
         } catch (error) {
           console.error("Error fetching user data:", error)
         } finally {
@@ -153,6 +192,22 @@ function Profile() {
       <div className={styles.profileHeader}>
         <div className={styles.coverPhoto}>
           <div className={styles.coverOverlay}>
+            <div className={styles.coverOverlayContent}>
+              <div className={styles.coverUserDetails}>
+                <div className={styles.profilePicture}>
+                  <img 
+                    src={userDetails?.profilePic || profilePic || "https://via.placeholder.com/150/667eea/ffffff?text=User"} 
+                    alt="Profile" 
+                  />
+                </div>
+                <div className={styles.coverUserDetailsContent}>
+                  <h1 className={styles.username}>{userDetails?.username || username || "AnimeFan"}</h1>
+                  <p className={styles.userTitle}>Anime Enthusiast</p>
+                </div>
+             
+              </div>
+          
+          
             <div className={styles.profileActions}>
               <button className={styles.editButton} onClick={handleEditProfile}>
                 <FaEdit size={16} />
@@ -163,23 +218,20 @@ function Profile() {
                 Customize
               </button>
             </div>
+            </div>
           </div>
         </div>
         
         <div className={styles.profileInfo}>
-          <div className={styles.profilePicture}>
-            <img 
-              src={userDetails?.profilePic || profilePic || "https://via.placeholder.com/150/667eea/ffffff?text=User"} 
-              alt="Profile" 
-            />
-            <div className={styles.onlineStatus}></div>
-          </div>
+        
           
           <div className={styles.userDetails}>
-            <h1 className={styles.username}>{userDetails?.username || username || "AnimeFan"}</h1>
-            <p className={styles.userTitle}>Anime Enthusiast</p>
             
             <div className={styles.userMeta}>
+              <div className={styles.metaItem}>
+                <FaCalendarAlt size={14} />
+                <span>Joined {userProfile.joinDate}</span>
+              </div>
               <div className={styles.metaItem}>
                 <FaUser size={14} />
                 <span>{userProfile.location}</span>
@@ -197,11 +249,26 @@ function Profile() {
                   onChange={(e) => setUserProfile({...userProfile, bio: e.target.value})}
                   className={styles.bioInput}
                   rows={3}
+                  placeholder="Tell us about yourself..."
                 />
               ) : (
-                <p>{userProfile.bio}</p>
+                <p>{userProfile.bio || "No bio available"}</p>
               )}
             </div>
+            
+            {isEditing && (
+              <div className={styles.locationInput}>
+                <label htmlFor="location">Location:</label>
+                <input
+                  id="location"
+                  type="text"
+                  value={userProfile.location}
+                  onChange={(e) => setUserProfile({...userProfile, location: e.target.value})}
+                  className={styles.locationField}
+                  placeholder="Enter your location..."
+                />
+              </div>
+            )}
             
             {isEditing && (
               <div className={styles.editActions}>
@@ -216,14 +283,6 @@ function Profile() {
               </div>
             )}
           </div>
-        </div>
-      </div>
-
-      {/* Join Date Section */}
-      <div className={styles.joinDateSection}>
-        <div className={styles.joinDateInfo}>
-          <FaCalendarAlt size={16} />
-          <span>Joined {userProfile.joinDate}</span>
         </div>
       </div>
 

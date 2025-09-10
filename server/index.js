@@ -379,7 +379,10 @@ app.get("/api/getUserDetails", async(req, res) => {
                 _id: user._id,
                 username: user.username,
                 email: user.email,
-                profilePic: user.profilePic
+                profilePic: user.profilePic,
+                bio: user.bio || "",
+                location: user.location || "",
+                joinDate: user.joinDate || new Date()
             })
         } else {
             res.status(404).send("User not found")
@@ -416,6 +419,47 @@ app.get("/api/getUserStats", async(req, res) => {
         res.status(500).send(err)
     }
 })
+
+// Edit user profile endpoint
+app.put("/api/editProfile", async(req, res) => {
+    const { userId, bio, location } = req.body;
+    try{
+        const user = await UsersModel.findById(userId);
+        if(user){
+            // Update bio and location if provided
+            if(bio !== undefined) user.bio = bio;
+            if(location !== undefined) user.location = location;
+            
+            await user.save();
+            console.log("user profile updated")
+            
+            res.send({
+                success: true,
+                message: "Profile updated successfully",
+                user: {
+                    _id: user._id,
+                    username: user.username,
+                    email: user.email,
+                    profilePic: user.profilePic,
+                    bio: user.bio,
+                    location: user.location
+                }
+            });
+        } else {
+            res.status(404).send({
+                success: false,
+                message: "User not found"
+            });
+        }
+    } catch(err){
+        console.log(err);
+        res.status(500).send({
+            success: false,
+            message: "Error updating profile",
+            error: err.message
+        });
+    }
+});
 
 
 app.listen(1337, () => {
