@@ -369,6 +369,55 @@ app.get("/api/getTopSongs", async(req, res) => {
     }
 })
 
+app.get("/api/getUserDetails", async(req, res) => {
+    const { userId } = req.query;
+
+    try{
+        const user = await UsersModel.findById(userId)
+        if(user){
+            res.send({
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+                profilePic: user.profilePic
+            })
+        } else {
+            res.status(404).send("User not found")
+        }
+    } catch(err){
+        console.log(err)
+        res.status(500).send(err)
+    }
+})
+
+app.get("/api/getUserStats", async(req, res) => {
+    const { userId } = req.query;
+
+    try{
+        // Get lists created by user
+        const listsCount = await UserListModel.countDocuments({ UserId: userId })
+        
+        // Get reviews written by user
+        const reviewsCount = await ReviewsModel.countDocuments({ UserId: userId })
+        
+        // Get anime/manga items in user's lists
+        const animeInLists = await ListModel.countDocuments({ UserId: userId, Type: "Anime" })
+        const mangaInLists = await ListModel.countDocuments({ UserId: userId, Type: "Manga" })
+        
+        res.send({
+            listsCreated: listsCount,
+            reviewsWritten: reviewsCount,
+            animeInLists: animeInLists,
+            mangaInLists: mangaInLists,
+            totalItemsInLists: animeInLists + mangaInLists
+        })
+    } catch(err){
+        console.log(err)
+        res.status(500).send(err)
+    }
+})
+
+
 app.listen(1337, () => {
     console.log("server connected")
 })
