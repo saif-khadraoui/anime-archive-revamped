@@ -28,7 +28,30 @@ const UserSchema = new mongoose.Schema({
     joinDate: {
         type: Date,
         required: false
-    }
+    },
+    favoriteAnime: [{
+        animeId: {
+            type: String,
+            required: true
+        },
+        title: {
+            type: String,
+            required: true
+        },
+        image: {
+            type: String,
+            required: false
+        },
+        type: {
+            type: String,
+            required: false,
+            default: "Anime"
+        },
+        addedDate: {
+            type: Date,
+            default: Date.now
+        }
+    }]
 
 })
 

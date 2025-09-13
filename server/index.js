@@ -27,19 +27,52 @@ mongoose.connect("mongodb+srv://saifkhadraoui656:AYSbUIMAcBJUXXTQ@cluster0.oobrk
 app.post("/api/register", async(req, res) => {
     const { email, username, password } = req.body;
 
-    const user = new UsersModel({
-        email: email,
-        username: username,
-        password: password,
-        profilePic: ""
-    })
-
     try{
-        await user.save()
-        res.send("user registered")
+        // Check if email already exists
+        const existingEmail = await UsersModel.findOne({ email: email });
+        if (existingEmail) {
+            return res.status(400).json({
+                success: false,
+                message: "An account with this email already exists. Please use a different email or try logging in."
+            });
+        }
+
+        // Check if username already exists
+        const existingUsername = await UsersModel.findOne({ username: username });
+        if (existingUsername) {
+            return res.status(400).json({
+                success: false,
+                message: "This username is already taken. Please choose a different username."
+            });
+        }
+
+        // Create new user if validation passes
+        const user = new UsersModel({
+            email: email,
+            username: username,
+            password: password,
+            profilePic: "",
+            joinDate: new Date()
+        });
+
+        await user.save();
+        
+        res.status(201).json({
+            success: true,
+            message: "User registered successfully",
+            user: {
+                _id: user._id,
+                email: user.email,
+                username: user.username
+            }
+        });
     } catch(err){
-        console.log(err)
-        res.send(err)
+        console.log(err);
+        res.status(500).json({
+            success: false,
+            message: "Registration failed. Please try again.",
+            error: err.message
+        });
     }
 })
 
@@ -456,6 +489,113 @@ app.put("/api/editProfile", async(req, res) => {
         res.status(500).send({
             success: false,
             message: "Error updating profile",
+            error: err.message
+        });
+    }
+});
+
+// Add anime to favorites endpoint
+app.post("/api/addToFavorites", async(req, res) => {
+    const { userId, animeId, title, image, type } = req.body;
+    try{
+        const user = await UsersModel.findById(userId);
+        if(user){
+            // Check if anime is already in favorites
+            const existingFavorite = user.favoriteAnime.find(fav => fav.animeId === animeId);
+            
+            if(existingFavorite){
+                res.status(400).send({
+                    success: false,
+                    message: "Anime already in favorites"
+                });
+                return;
+            }
+            
+            // Add to favorites
+            user.favoriteAnime.push({
+                animeId: animeId,
+                title: title,
+                image: image,
+                type: type || "Anime",
+                addedDate: new Date()
+            });
+            
+            await user.save();
+            
+            res.send({
+                success: true,
+                message: "Anime added to favorites",
+                favorites: user.favoriteAnime
+            });
+        } else {
+            res.status(404).send({
+                success: false,
+                message: "User not found"
+            });
+        }
+    } catch(err){
+        console.log(err);
+        res.status(500).send({
+            success: false,
+            message: "Error adding to favorites",
+            error: err.message
+        });
+    }
+});
+
+// Remove anime from favorites endpoint
+app.delete("/api/removeFromFavorites", async(req, res) => {
+    const { userId, animeId } = req.body;
+    try{
+        const user = await UsersModel.findById(userId);
+        if(user){
+            // Remove from favorites
+            user.favoriteAnime = user.favoriteAnime.filter(fav => fav.animeId !== animeId);
+            
+            await user.save();
+            
+            res.send({
+                success: true,
+                message: "Anime removed from favorites",
+                favorites: user.favoriteAnime
+            });
+        } else {
+            res.status(404).send({
+                success: false,
+                message: "User not found"
+            });
+        }
+    } catch(err){
+        console.log(err);
+        res.status(500).send({
+            success: false,
+            message: "Error removing from favorites",
+            error: err.message
+        });
+    }
+});
+
+// Get user's favorite anime endpoint
+app.get("/api/getFavorites", async(req, res) => {
+    const { userId } = req.query;
+    try{
+        const user = await UsersModel.findById(userId);
+        if(user){
+            res.send({
+                success: true,
+                favorites: user.favoriteAnime || []
+            });
+        } else {
+            res.status(404).send({
+                success: false,
+                message: "User not found"
+            });
+        }
+    } catch(err){
+        console.log(err);
+        res.status(500).send({
+            success: false,
+            message: "Error fetching favorites",
             error: err.message
         });
     }
