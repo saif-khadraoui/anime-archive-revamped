@@ -389,16 +389,74 @@ app.get("/api/getSongVotes", async(req,res) => {
 })
 
 app.get("/api/getTopSongs", async(req, res) => {
-
     try{
-        const response = await SongVoteModel.aggregate(
-            {$group : { _id : '$AnimeId', count : {$sum : 1}}}
-         ).result
-         console.log(response)  
-         res.send(response)
+        // Get top 10 songs by likes (positive votes)
+        const topSongs = await SongVoteModel.aggregate([
+            {
+                $match: { Vote: true } // Only count positive votes (likes)
+            },
+            {
+                $group: { 
+                    _id: '$Basename', 
+                    likes: { $sum: 1 },
+                    animeId: { $first: '$AnimeId' }
+                }
+            },
+            {
+                $sort: { likes: -1 } // Sort by likes descending
+            },
+            {
+                $limit: 10 // Get top 10
+            }
+        ])
+        
+        // Fetch anime names for each song
+        const songsWithAnimeNames = await Promise.all(
+            topSongs.map(async (song) => {
+                try {
+                    // Fetch anime data from external API
+                    const animeResponse = await fetch(`https://api.animethemes.moe/anime?include=animesynonyms,series,animethemes,animethemes.animethemeentries.videos,animethemes.song,animethemes.song.artists,studios,images,resources&fields%5Banime%5D=id,name,slug,year&filter%5Bhas%5D=resources&filter%5Bsite%5D=myanimelist&filter%5Bexternal_id%5D=${song.animeId}`)
+                    const animeData = await animeResponse.json()
+                    
+                    const animeName = animeData.anime?.[0]?.name || `Anime ID: ${song.animeId}`
+                    
+                    // Clean song name (remove .webm extension and format)
+                    const cleanSongName = song._id
+                        .replace(/\.webm$/i, '') // Remove .webm extension
+                        .replace(/_/g, ' ') // Replace underscores with spaces
+                        .replace(/\b\w/g, l => l.toUpperCase()) // Capitalize first letter of each word
+                    
+                    return {
+                        ...song,
+                        animeName: animeName,
+                        cleanSongName: cleanSongName
+                    }
+                } catch (error) {
+                    console.error(`Error fetching anime data for ID ${song.animeId}:`, error)
+                    return {
+                        ...song,
+                        animeName: `Anime ID: ${song.animeId}`,
+                        cleanSongName: song._id
+                            .replace(/\.webm$/i, '')
+                            .replace(/_/g, ' ')
+                            .replace(/\b\w/g, l => l.toUpperCase())
+                    }
+                }
+            })
+        )
+        
+        console.log("Top songs with anime names:", songsWithAnimeNames)
+        res.json({
+            success: true,
+            topSongs: songsWithAnimeNames
+        })
     } catch(err){
         console.log(err)
-        res.send(err)
+        res.status(500).json({
+            success: false,
+            message: "Error fetching top songs",
+            error: err.message
+        })
     }
 })
 
@@ -580,6 +638,93 @@ app.get("/api/getFavorites", async(req, res) => {
     const { userId } = req.query;
     try{
         const user = await UsersModel.findById(userId);
+        if(user){
+            res.send({
+                success: true,
+                favorites: user.favoriteAnime || []
+            });
+        } else {
+            res.status(404).send({
+                success: false,
+                message: "User not found"
+            });
+        }
+    } catch(err){
+        console.log(err);
+        res.status(500).send({
+            success: false,
+            message: "Error fetching favorites",
+            error: err.message
+        });
+    }
+});
+
+// Get public user details endpoint (no sensitive data)
+app.get("/api/getPublicUserDetails", async(req, res) => {
+    const { username } = req.query;
+    try{
+        const user = await UsersModel.findOne({ username: username })
+        if(user){
+            res.send({
+                _id: user._id,
+                username: user.username,
+                profilePic: user.profilePic,
+                bio: user.bio || "",
+                joinDate: user.joinDate || new Date()
+                // Note: email is not included for privacy
+            })
+        } else {
+            res.status(404).send("User not found")
+        }
+    } catch(err){
+        console.log(err)
+        res.status(500).send(err)
+    }
+})
+
+// Get public user statistics endpoint
+app.get("/api/getPublicUserStats", async(req, res) => {
+    const { username } = req.query;
+    try{
+        // First get the user to get their userId
+        const user = await UsersModel.findOne({ username: username })
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            })
+        }
+        
+        const userId = user._id
+        
+        // Get lists created by user
+        const listsCount = await ListModel.countDocuments({ UserId: userId })
+        
+        // Get reviews written by user
+        const reviewsCount = await ReviewsModel.countDocuments({ UserId: userId })
+        
+        // Get anime/manga items in user's lists
+        const animeInLists = await ListModel.countDocuments({ UserId: userId, Type: "Anime" })
+        const mangaInLists = await ListModel.countDocuments({ UserId: userId, Type: "Manga" })
+        
+        res.send({
+            listsCreated: listsCount,
+            reviewsWritten: reviewsCount,
+            animeInLists: animeInLists,
+            mangaInLists: mangaInLists,
+            totalItemsInLists: animeInLists + mangaInLists
+        })
+    } catch(err){
+        console.log(err)
+        res.status(500).send(err)
+    }
+})
+
+// Get public user's favorite anime endpoint
+app.get("/api/getPublicFavorites", async(req, res) => {
+    const { username } = req.query;
+    try{
+        const user = await UsersModel.findOne({ username: username });
         if(user){
             res.send({
                 success: true,
